@@ -26,26 +26,22 @@ export class TopNavComponent implements OnDestroy {
   searchResults = signal<CityTimezone[]>([]);
   searchTerm = signal('');
 
-  private currentUrl = toSignal(
+  private activatedRouteData = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      map(event => event.urlAfterRedirects)
-    )
+      map(() => {
+        let route = this.router.routerState.root;
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
+        return route.snapshot.data;
+      })
+    ),
+    { initialValue: {} }
   );
 
-  showBackButton = computed(() => {
-    const url = this.currentUrl();
-    if (!url) return false;
-    
-    // Show on specific game pages (but not the main game center)
-    const isGamePage = url.startsWith('/game/') && url !== '/game';
-    // Show on novel reader
-    const isNovelPage = url.startsWith('/novel/');
-    // Show on manga reader
-    const isMangaPage = url.startsWith('/manga/');
-    
-    return isGamePage || isNovelPage || isMangaPage;
-  });
+  showBackButton = computed(() => this.activatedRouteData()['showBackButton'] ?? false);
+  private backNavigationTarget = computed(() => this.activatedRouteData()['backNavigationTarget'] as string | undefined);
 
   // Computed signal for display
   displayTime = computed(() => {
@@ -89,7 +85,12 @@ export class TopNavComponent implements OnDestroy {
   }
 
   goBack(): void {
-    this.location.back();
+    const target = this.backNavigationTarget();
+    if (target) {
+      this.router.navigate([target]);
+    } else {
+      this.location.back();
+    }
   }
 
   toggleTimePopover() {
