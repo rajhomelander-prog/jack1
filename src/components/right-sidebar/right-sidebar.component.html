@@ -18,28 +18,61 @@
   <!-- Market Snapshot -->
   <div class="bg-card-background border border-border-color rounded-xl p-4">
     <h3 class="text-sm font-semibold text-text-primary mb-3">Market Snapshot</h3>
-    <div class="space-y-3">
+    <div class="space-y-2">
       @for(item of marketSnapshot(); track item.name) {
-        <div class="flex justify-between items-center">
-          <span class="text-sm text-text-secondary">{{ item.name }}</span>
-          <span class="text-sm font-mono" [class]="item.changePercent >= 0 ? 'text-positive-green' : 'text-negative-red'">
-            {{ item.changePercent >= 0 ? '+' : '' }}{{ item.changePercent | number:'1.2-2' }}%
-          </span>
+        <div (click)="navigateToMarket(item.type)"
+             class="p-2 rounded-md cursor-pointer grid grid-cols-3 gap-2 items-center transition-colors hover:bg-elevated-card">
+          <!-- Name & Value -->
+          <div class="col-span-1">
+            <p class="text-sm font-bold text-text-primary truncate">{{ item.name }}</p>
+            <p class="text-xs font-mono text-text-secondary">{{ item.value | number:'1.2-2' }}</p>
+          </div>
+          <!-- Sparkline -->
+          <div class="col-span-1 flex justify-center items-center">
+            <svg width="80" height="30" viewBox="0 0 100 60">
+               <path [attr.d]="item.sparkline" fill="none" [attr.stroke]="item.changePercent >= 0 ? 'var(--color-positive-green)' : 'var(--color-negative-red)'" stroke-width="3"/>
+            </svg>
+          </div>
+          <!-- Change -->
+          <div class="col-span-1 text-right">
+            <p class="text-sm font-mono" [class]="item.changePercent >= 0 ? 'text-positive-green' : 'text-negative-red'">
+              {{ item.changePercent >= 0 ? '+' : '' }}{{ item.changePercent | number:'1.2-2' }}%
+            </p>
+            <p class="text-xs font-mono" [class]="item.changePercent >= 0 ? 'text-positive-green' : 'text-negative-red'">
+              {{ item.changeValue >= 0 ? '+' : '' }}{{ item.changeValue | number:'1.2-2' }}
+            </p>
+          </div>
         </div>
       }
     </div>
   </div>
 
   <!-- Daily Insight -->
-  <div class="bg-elevated-card border border-border-color rounded-xl p-4">
-    <div class="flex justify-between items-center mb-3">
-      <h3 class="text-sm font-semibold text-text-primary">Daily Insight</h3>
-      <button (click)="refreshInsight()" title="New Insight" class="text-text-secondary hover:text-text-primary transition-colors duration-200">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 11A8.1 8.1 0 004.5 9M4 5v4h4m-4 4a8.1 8.1 0 0015.5 2 8.1 8.1 0 00-4.5-7.5M20 15v4h-4"></path></svg>
-      </button>
+  <div class="bg-elevated-card border border-border-color rounded-xl p-4 flex flex-col justify-between h-48">
+    <div>
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-sm font-semibold text-text-primary">Daily Insight</h3>
+        <button (click)="refreshInsight()" title="New Insight" class="text-text-secondary hover:text-text-primary transition-colors duration-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 11A8.1 8.1 0 004.5 9M4 5v4h4m-4 4a8.1 8.1 0 0015.5 2 8.1 8.1 0 00-4.5-7.5M20 15v4h-4"></path></svg>
+        </button>
+      </div>
+      <p class="text-sm text-text-secondary italic">"{{ dailyInsight().quote }}"</p>
     </div>
-    <p class="text-sm text-text-secondary italic">"{{ dailyInsight().quote }}"</p>
-    <p class="text-xs text-right text-text-secondary/50 mt-2">- {{ dailyInsight().author }}</p>
+    
+    <div>
+      <div class="flex items-center justify-center space-x-2 my-2">
+          @for (cat of insightCategories; track cat) {
+              <button (click)="setInsightCategory(cat)"
+                      class="px-2 py-0.5 text-xs rounded-full transition-colors duration-200 border"
+                      [class]="activeInsightCategory() === cat
+                          ? 'bg-accent-red border-accent-red text-white'
+                          : 'bg-transparent border-border-color text-text-secondary hover:border-text-primary'">
+                  {{ cat }}
+              </button>
+          }
+      </div>
+      <p class="text-xs text-right text-text-secondary/50 w-full">- {{ dailyInsight().author }}</p>
+    </div>
   </div>
 
   <!-- Suggested For You -->
