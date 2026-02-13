@@ -1,0 +1,94 @@
+<header class="h-16 sticky top-0 z-40 bg-background-primary/80 backdrop-blur-md border-b border-border-color">
+  <div class="max-w-[1400px] mx-auto h-full flex items-center justify-between px-4">
+    <!-- Left: Back Button & Logo -->
+    <div class="flex items-center space-x-4">
+      @if (showBackButton()) {
+        <button (click)="goBack()" class="text-text-secondary hover:text-text-primary p-2 -ml-2 rounded-full transition-colors animate-fade-in" title="Go back">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+      }
+      <a routerLink="/" class="flex items-center space-x-2">
+        <div class="text-accent-red h-7 w-7">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M 100 190 L 0 10 L 40 10 L 100 130 L 160 10 L 200 10 Z" />
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-text-primary tracking-tight">vichara.life</span>
+      </a>
+    </div>
+
+    <!-- Center: Navigation -->
+    <nav class="hidden md:flex items-center space-x-4">
+      @for(item of navItems(); track item.name) {
+        <a [routerLink]="item.route"
+           routerLinkActive #rla="routerLinkActive"
+           [routerLinkActiveOptions]="{exact: item.route === '/'}"
+           class="h-16 flex items-center justify-center px-3 text-text-secondary hover:text-text-primary transition-colors relative"
+           [class.text-text-primary]="rla.isActive"
+           [title]="item.name">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="item.icon" />
+          </svg>
+          @if(rla.isActive) {
+            <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-red"></span>
+          }
+        </a>
+      }
+    </nav>
+
+    <!-- Right: Actions -->
+    <div class="flex items-center space-x-4">
+       <!-- Time Display & Popover -->
+      <div class="relative">
+        <button (click)="toggleTimePopover()" class="text-text-secondary hover:text-text-primary text-sm font-mono flex items-center space-x-2" title="Change Timezone">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+          <span>{{ displayTime().time }}</span>
+        </button>
+
+        @if (isTimePopoverOpen()) {
+          <div class="absolute top-full right-0 mt-3 w-72 bg-elevated-card border border-border-color rounded-lg shadow-2xl p-4 animate-fade-in z-50">
+            <h3 class="font-semibold text-text-primary">{{ selectedCity().city }}</h3>
+            <p class="text-3xl font-mono text-text-primary my-2">{{ displayTime().time }}</p>
+            <p class="text-sm text-text-secondary">{{ displayTime().date }} ({{ displayTime().timezone }})</p>
+            
+            <div class="mt-4 pt-4 border-t border-border-color">
+                <input type="text" 
+                       placeholder="Search city or country..."
+                       [value]="searchTerm()"
+                       (input)="onSearch($event)"
+                       class="w-full bg-card-background border border-border-color rounded-md px-3 py-2 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-accent-red">
+            </div>
+            
+            @if(searchResults().length > 0) {
+              <ul class="mt-2 max-h-40 overflow-y-auto">
+                @for(city of searchResults(); track city.timezone) {
+                  <li (click)="selectCity(city)" class="p-2 text-sm rounded-md cursor-pointer hover:bg-card-background text-text-secondary hover:text-text-primary">
+                    {{ city.city }}, {{ city.country }}
+                  </li>
+                }
+              </ul>
+            } @else if(searchTerm()) {
+                <p class="text-center text-xs text-text-secondary mt-3">No results found.</p>
+            }
+          </div>
+        }
+      </div>
+
+
+      <a routerLink="/notifications" class="text-text-secondary hover:text-text-primary relative" title="Notifications">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-negative-red"></span>
+        </span>
+      </a>
+      <button class="text-text-secondary hover:text-text-primary" title="Create">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+      </button>
+      <a routerLink="/profile" class="block h-8 w-8 rounded-full bg-elevated-card overflow-hidden transition-transform duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background-primary focus:ring-accent-red">
+        <img src="https://picsum.photos/seed/currentuser/40/40" alt="User Avatar" class="h-full w-full object-cover">
+      </a>
+    </div>
+  </div>
+</header>

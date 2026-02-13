@@ -1,0 +1,104 @@
+<div class="w-full max-w-2xl mx-auto">
+  @switch (session().status) {
+    @case ('waiting') {
+      <div class="text-center bg-[#141414] border border-[#2A2A2A] rounded-lg p-8">
+        <h1 class="text-3xl font-bold text-white">Astrology Trivia Challenge</h1>
+        <p class="text-[#A0A0A0] mt-2 mb-6">Test your cosmic knowledge. You have 3 lives. Answer before the timer runs out!</p>
+        <button (click)="startGame()" class="bg-[#E50914] text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-transform hover:scale-105">
+          Start Game
+        </button>
+      </div>
+    }
+
+    @case ('in_progress') {
+       @if (session().currentQuestion; as question) {
+        <div class="bg-[#141414] border border-[#2A2A2A] rounded-lg p-6 animate-fade-in">
+          <!-- Game Header -->
+          <div class="flex justify-between items-center mb-6">
+            <div class="text-sm text-[#A0A0A0]">Round {{ session().currentRound }} / {{ session().totalRounds }}</div>
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-1 text-sm font-semibold text-white">
+                <span class="text-lg">💰</span>
+                <span>{{ session().player.score }}</span>
+              </div>
+              <div class="flex items-center space-x-1 text-sm text-red-500 font-semibold">
+                <span class="text-lg">❤️</span>
+                <span>{{ session().player.lives }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timer -->
+          <div class="w-full bg-[#2A2A2A] rounded-full h-2 mb-4">
+             <div class="bg-[#E50914] h-2 rounded-full transition-all duration-1000 linear" [style.width.%]="(timer() / 15) * 100"></div>
+          </div>
+
+          <!-- Question -->
+          <h2 class="text-xl font-semibold text-white text-center min-h-16">{{ question.question }}</h2>
+
+          <!-- Options -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+            @for (option of question.options; track option.id) {
+              <button (click)="submitAnswer(option.id)" class="text-left w-full bg-[#1F1F1F] border border-[#2A2A2A] rounded-lg p-4 text-white hover:bg-[#2A2A2A] hover:border-[#E50914] transition-all focus:outline-none focus:ring-2 focus:ring-[#E50914]">
+                <span class="font-semibold">{{ option.text }}</span>
+              </button>
+            }
+          </div>
+        </div>
+       }
+    }
+
+    @case ('feedback') {
+      @if (session().currentQuestion; as question) {
+        <div class="bg-[#141414] border border-[#2A2A2A] rounded-lg p-6 animate-fade-in">
+          <div class="text-center">
+            @if (session().lastAnswerCorrect) {
+              <h2 class="text-3xl font-bold text-[#10B981]">Correct!</h2>
+            } @else {
+              <h2 class="text-3xl font-bold text-[#E50914]">Incorrect</h2>
+            }
+             <p class="text-white mt-4">{{ question.explanation }}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+             @for (option of question.options; track option.id) {
+              <div class="text-left w-full border rounded-lg p-4" [class]="option.id === question.correctAnswerId ? 'bg-green-900/50 border-green-500 text-white' : 'bg-[#1F1F1F] border-[#2A2A2A] text-gray-400'">
+                <span class="font-semibold">{{ option.text }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+    
+    @case ('completed') {
+      @if (results(); as res) {
+        <div class="text-center bg-[#141414] border border-[#2A2A2A] rounded-lg p-8 animate-fade-in">
+          <h1 class="text-3xl font-bold text-white">Challenge Complete!</h1>
+          
+          <div class="mt-6 flex justify-around items-center text-white">
+            <div>
+              <p class="text-sm text-[#A0A0A0]">Final Score</p>
+              <p class="text-3xl font-bold">{{ res.finalScore }}</p>
+            </div>
+             <div>
+              <p class="text-sm text-[#A0A0A0]">Accuracy</p>
+              <p class="text-3xl font-bold">{{ res.accuracy | number:'1.0-0' }}%</p>
+            </div>
+          </div>
+
+          <div class="mt-6 bg-[#1F1F1F] rounded-lg p-4">
+             <h3 class="text-lg font-semibold text-white">Rewards</h3>
+             <div class="flex justify-center space-x-8 mt-2">
+                <p class="text-yellow-400 font-semibold">{{res.xpEarned}} XP</p>
+                <p class="text-green-400 font-semibold">{{res.coinsEarned}} Coins</p>
+             </div>
+          </div>
+
+          <button (click)="startGame()" class="mt-8 bg-[#E50914] text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-transform hover:scale-105">
+            Play Again
+          </button>
+        </div>
+      }
+    }
+  }
+</div>

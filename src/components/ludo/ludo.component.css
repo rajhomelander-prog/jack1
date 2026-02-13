@@ -1,0 +1,174 @@
+/* --- Classic Board Setup --- */
+.ludo-board-classic {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 6fr 3fr 6fr;
+  grid-template-rows: 6fr 3fr 6fr;
+  background-color: #e0e0e0;
+  border: 4px solid #4a2c2a;
+  box-shadow: 0 0 0 2px #c9b49a;
+}
+
+.base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.inner-base {
+  width: 75%;
+  height: 75%;
+  background-color: #f5f5f5;
+  border-radius: 0.5rem;
+  border: 2px solid rgba(0,0,0,0.2);
+}
+
+.red-base { background-color: #d32f2f; grid-area: 1 / 1 / 2 / 2; }
+.green-base { background-color: #388e3c; grid-area: 1 / 3 / 2 / 4; }
+.blue-base { background-color: #1976d2; grid-area: 3 / 1 / 4 / 2; }
+.yellow-base { background-color: #fbc02d; grid-area: 3 / 3 / 4 / 4; }
+
+.path { grid-area: 2 / 2 / 3 / 3; }
+.red-path { grid-area: 2 / 1 / 3 / 2; background-image: linear-gradient(to bottom, #d32f2f 16.66%, transparent 16.66%);}
+.green-path { grid-area: 1 / 2 / 2 / 3; background-image: linear-gradient(to right, #388e3c 16.66%, transparent 16.66%);}
+.blue-path { grid-area: 3 / 2 / 4 / 3; background-image: linear-gradient(to left, #1976d2 16.66%, transparent 16.66%);}
+.yellow-path { grid-area: 2 / 3 / 3 / 4; background-image: linear-gradient(to top, #fbc02d 16.66%, transparent 16.66%);}
+
+.home-area {
+  grid-area: 2 / 2 / 3 / 3;
+  position: relative;
+  background-color: #f5f5f5;
+}
+
+.triangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+.red-triangle { border-width: 50% 50% 0 50%; border-color: #d32f2f transparent transparent transparent; top: 0; left: 0; width: 100%; }
+.green-triangle { border-width: 50% 50% 50% 0; border-color: transparent #388e3c transparent transparent; right: 0; top: 0; height: 100%;}
+.yellow-triangle { border-width: 0 50% 50% 50%; border-color: transparent transparent #fbc02d transparent; bottom: 0; left: 0; width: 100%; }
+.blue-triangle { border-width: 50% 0 50% 50%; border-color: transparent transparent transparent #1976d2; left: 0; top: 0; height: 100%;}
+
+
+/* --- Player Colors --- */
+.bg-Red-player { background-color: #d32f2f; }
+.bg-Green-player { background-color: #388e3c; }
+.bg-Blue-player { background-color: #1976d2; }
+.bg-Yellow-player { background-color: #fbc02d; }
+
+.text-Red { color: #d32f2f; }
+.text-Green { color: #388e3c; }
+.text-Blue { color: #1976d2; }
+.text-Yellow { color: #fbc02d; }
+
+/* --- Classic Pieces --- */
+.piece {
+  position: absolute;
+  width: 5.5%;
+  height: 5.5%;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.4);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.3);
+  transition: top 0.2s ease-in-out, left 0.2s ease-in-out, transform 0.2s;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.piece.red { background-color: #d32f2f; }
+.piece.green { background-color: #388e3c; }
+.piece.blue { background-color: #1976d2; }
+.piece.yellow { background-color: #fbc02d; }
+
+.piece.movable {
+  cursor: pointer;
+  animation: pulseClassic 1.5s infinite;
+  z-index: 20;
+}
+
+@keyframes pulseClassic {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.3), 0 0 0 0px rgba(255,255,255, 0.4);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 4px 8px rgba(0,0,0,0.4), 0 0 0 6px rgba(255,255,255, 0.4);
+  }
+}
+
+/* --- 2D Dice --- */
+.dice-2d {
+  width: 60px;
+  height: 60px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: grid;
+  grid-template-areas:
+    "a . c"
+    ". e ."
+    "d . b";
+  padding: 8px;
+  transition: transform 0.2s ease-out;
+}
+.dice-2d.rolling {
+  animation: rollDiceAnim 0.4s ease-out;
+}
+@keyframes rollDiceAnim {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.dice-2d .dot {
+  width: 12px;
+  height: 12px;
+  background-color: #333;
+  border-radius: 50%;
+  place-self: center;
+  display: none; /* Hide all dots by default */
+}
+
+/* Position dots in grid */
+.dot-1 { grid-area: a; }
+.dot-2 { grid-area: b; }
+.dot-3 { grid-area: c; }
+.dot-4 { grid-area: d; }
+.dot-5 { grid-area: e; }
+.dot-6 { grid-area: f; } /* Not used in this layout, just for consistency */
+
+/* Show dots based on parent class */
+.dice-2d.show-1 .dot-5 { display: block; }
+
+.dice-2d.show-2 .dot-1, .dice-2d.show-2 .dot-2 { display: block; }
+
+.dice-2d.show-3 .dot-1, .dice-2d.show-3 .dot-5, .dice-2d.show-3 .dot-2 { display: block; }
+
+.dice-2d.show-4 .dot-1, .dice-2d.show-2, .dice-2d.show-4 .dot-3, .dice-2d.show-4 .dot-4 { display: block; }
+.dice-2d.show-4 { grid-template-areas: "a . c" ". . ." "d . b"; }
+
+.dice-2d.show-5 .dot-1, .dice-2d.show-5 .dot-2, .dice-2d.show-5 .dot-3, .dice-2d.show-5 .dot-4, .dice-2d.show-5 .dot-5 { display: block; }
+.dice-2d.show-5 { grid-template-areas: "a . c" ". e ." "d . b"; }
+
+.dice-2d.show-6 .dot-1, .dice-2d.show-6 .dot-2, .dice-2d.show-6 .dot-3, .dice-2d.show-6 .dot-4 { display: block; }
+.dice-2d.show-6 { grid-template-areas: "a . c" "f1 . f2" "d . b"; } /* We need a different grid for 6 dots */
+.dice-2d.show-6 { display: flex; flex-wrap: wrap; justify-content: space-between; }
+.dice-2d.show-6 .dot { display: block; margin: 2px; }
+.dice-2d.show-6 .dot-5, .dice-2d.show-6 .dot-6 { display: none; }
+.dice-2d.show-6 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas: "a d" "b e" "c f";
+}
+.dice-2d.show-6 .dot-1 { grid-area: a; }
+.dice-2d.show-6 .dot-2 { grid-area: b; }
+.dice-2d.show-6 .dot-3 { grid-area: c; }
+.dice-2d.show-6 .dot-4 { grid-area: d; }
+.dice-2d.show-6 .dot-5 { grid-area: e; display: block;}
+.dice-2d.show-6 .dot-6 { grid-area: f; display: block;}

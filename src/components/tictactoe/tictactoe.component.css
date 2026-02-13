@@ -1,0 +1,103 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* --- Board & Grid --- */
+.ttt-board {
+  gap: 10px;
+  background-color: var(--color-elevated-card);
+  border: 1px solid var(--color-border-color);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.1), 0 5px 10px rgba(0,0,0,0.3);
+}
+
+.ttt-square {
+  background-color: var(--color-card-background);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.ttt-square:not(:disabled):hover {
+  background-color: var(--color-elevated-card);
+}
+
+.ttt-square:disabled {
+  cursor: not-allowed;
+}
+
+/* --- X's and O's --- */
+.ttt-x, .ttt-o {
+  width: 60%;
+  height: 60%;
+  stroke-width: 8;
+  animation: draw-piece 0.3s ease-out forwards;
+}
+
+.ttt-x {
+  stroke: var(--color-accent-red);
+}
+
+.ttt-o {
+  stroke: var(--color-text-primary);
+  fill: none;
+}
+
+@keyframes draw-piece {
+  from {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --- Winning Line --- */
+.ttt-winner-line {
+  position: absolute;
+  background-color: var(--color-warning-yellow);
+  height: 6px;
+  border-radius: 3px;
+  transform-origin: center;
+  animation: draw-line 0.5s ease-out forwards;
+  box-shadow: 0 0 10px var(--color-warning-yellow);
+}
+
+@keyframes draw-line {
+  from { width: 0; }
+  to { width: 90%; }
+}
+
+/* Row Positions */
+.win-row-1 { top: 16.66%; left: 5%; }
+.win-row-2 { top: 50%; left: 5%; transform: translateY(-50%); }
+.win-row-3 { top: 83.33%; left: 5%; }
+
+/* Column Positions */
+.win-col-1 { top: 5%; left: 16.66%; transform: rotate(90deg); transform-origin: top left; }
+.win-col-2 { top: 5%; left: 50%; transform: rotate(90deg) translateX(-50%); transform-origin: top; }
+.win-col-3 { top: 5%; left: 83.33%; transform: rotate(90deg); transform-origin: top right; }
+
+/* Diagonal Positions */
+.win-diag-1 { top: 50%; left: 5%; transform: rotate(45deg); }
+.win-diag-2 { top: 50%; left: 5%; transform: rotate(-45deg); }
+
+.win-diag-1, .win-diag-2 {
+  animation-name: draw-line-diag;
+}
+@keyframes draw-line-diag {
+  from { width: 0; }
+  to { width: 125%; }
+}

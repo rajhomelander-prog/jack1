@@ -1,0 +1,70 @@
+<div class="h-full flex flex-col space-y-6">
+  <!-- Stories -->
+  <div class="bg-card-background border border-border-color rounded-xl p-4">
+    <h3 class="text-sm font-semibold text-text-primary mb-3">Stories</h3>
+    <div class="flex space-x-4">
+      @for(story of stories(); track story.userId) {
+        <div (click)="openStoryViewer(story.userId)" class="flex flex-col items-center space-y-1 cursor-pointer group">
+          <div class="relative">
+            <img class="h-12 w-12 rounded-full border-2 border-background-primary p-0.5" [src]="story.userAvatar" [alt]="story.userName">
+            <div class="absolute -inset-0.5 rounded-full border-2 transition-all" [class]="story.seen ? 'border-transparent' : 'border-accent-red'"></div>
+          </div>
+          <p class="text-xs text-text-secondary">{{ story.userName }}</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Market Snapshot -->
+  <div class="bg-card-background border border-border-color rounded-xl p-4">
+    <h3 class="text-sm font-semibold text-text-primary mb-3">Market Snapshot</h3>
+    <div class="space-y-3">
+      @for(item of marketSnapshot(); track item.name) {
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-text-secondary">{{ item.name }}</span>
+          <span class="text-sm font-mono" [class]="item.changePercent >= 0 ? 'text-positive-green' : 'text-negative-red'">
+            {{ item.changePercent >= 0 ? '+' : '' }}{{ item.changePercent | number:'1.2-2' }}%
+          </span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Daily Insight -->
+  <div class="bg-elevated-card border border-border-color rounded-xl p-4">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-sm font-semibold text-text-primary">Daily Insight</h3>
+      <button (click)="refreshInsight()" title="New Insight" class="text-text-secondary hover:text-text-primary transition-colors duration-200">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 11A8.1 8.1 0 004.5 9M4 5v4h4m-4 4a8.1 8.1 0 0015.5 2 8.1 8.1 0 00-4.5-7.5M20 15v4h-4"></path></svg>
+      </button>
+    </div>
+    <p class="text-sm text-text-secondary italic">"{{ dailyInsight().quote }}"</p>
+    <p class="text-xs text-right text-text-secondary/50 mt-2">- {{ dailyInsight().author }}</p>
+  </div>
+
+  <!-- Suggested For You -->
+  <div class="bg-card-background border border-border-color rounded-xl p-4">
+    <h3 class="text-sm font-semibold text-text-primary mb-3">Suggested For You</h3>
+    <div class="space-y-3">
+      @for(person of suggested(); track person.id) {
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <img class="h-8 w-8 rounded-full" [src]="person.avatar" [alt]="person.name">
+              <div>
+                <p class="text-sm font-medium text-text-primary">{{ person.name }}</p>
+                <p class="text-xs text-text-secondary">{{ person.role }}</p>
+              </div>
+            </div>
+            <button (click)="follow(person)" class="px-3 py-1 text-xs font-semibold rounded-full border border-border-color hover:bg-elevated-card transition-colors">Add</button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Sponsored -->
+  <div class="bg-card-background border border-border-color rounded-xl p-4">
+      <p class="text-xs text-text-secondary">Sponsored</p>
+      <p class="text-sm text-text-primary font-semibold mt-1">QuantumLeap Analytics</p>
+      <p class="text-xs text-text-secondary mt-1">Unlock market alpha with predictive AI models.</p>
+  </div>
+</div>

@@ -1,0 +1,97 @@
+<div class="w-full h-full flex flex-col items-center justify-center p-4">
+  @switch (gameState().status) {
+    @case (GameStatus.Lobby) {
+      <div class="text-center bg-card-background border border-border-color rounded-lg p-8 animate-fade-in">
+        <h1 class="text-3xl font-bold text-text-primary">Classic Ludo</h1>
+        <p class="text-text-secondary mt-2 mb-6">The original board game experience. A nostalgic and authentic game for all ages.</p>
+        <button (click)="startGame()" class="bg-accent-red text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-transform hover:scale-105">
+          Start 4-Player Game
+        </button>
+      </div>
+    }
+    @case (GameStatus.GameOver) {
+      <div class="text-center bg-card-background border border-border-color rounded-lg p-8 animate-fade-in">
+        <h1 class="text-3xl font-bold text-text-primary">Game Over!</h1>
+        @if(winner(); as winnerColor) {
+          <p class="text-xl mt-2 mb-6">
+            Player <span class="font-bold" [class]="'text-' + winnerColor">{{ winnerColor }}</span> wins!
+          </p>
+        }
+        <button (click)="startGame()" class="bg-accent-red text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-transform hover:scale-105">
+          Play Again
+        </button>
+      </div>
+    }
+    @case (GameStatus.InProgress) {
+      <div class="w-full max-w-4xl flex flex-col lg:flex-row items-center lg:items-start gap-8">
+        <!-- Classic Game Board -->
+        <div class="relative w-[350px] h-[350px] sm:w-[450px] sm:h-[450px] md:w-[525px] md:h-[525px] shadow-2xl">
+          <div class="ludo-board-classic">
+            <!-- Bases -->
+            <div class="base red-base"><div class="inner-base"></div></div>
+            <div class="base green-base"><div class="inner-base"></div></div>
+            <div class="base blue-base"><div class="inner-base"></div></div>
+            <div class="base yellow-base"><div class="inner-base"></div></div>
+            
+            <!-- Paths -->
+            <div class="path red-path"></div>
+            <div class="path green-path"></div>
+            <div class="path blue-path"></div>
+            <div class="path yellow-path"></div>
+
+            <!-- Center Home -->
+            <div class="home-area">
+              <div class="triangle red-triangle"></div>
+              <div class="triangle green-triangle"></div>
+              <div class="triangle yellow-triangle"></div>
+              <div class="triangle blue-triangle"></div>
+            </div>
+          </div>
+
+          <!-- Pieces -->
+          @for(player of players(); track player.color) {
+            @for(piece of player.pieces; track piece.id) {
+              @let pos = getPiecePosition(piece);
+              <div class="piece" 
+                  [class]="player.color"
+                  [class.movable]="movablePieces().includes(piece.id)"
+                  [style.top.%]="pos.y" 
+                  [style.left.%]="pos.x"
+                  (click)="movePiece(piece.id)">
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Game Controls -->
+        <div class="w-full lg:w-64 bg-card-background border border-border-color rounded-lg p-4 flex flex-col items-center">
+          <h2 class="text-lg font-bold text-text-primary mb-2">Current Turn</h2>
+          @if(activePlayer(); as player) {
+            <div class="w-full p-3 rounded-lg text-center font-bold text-lg" 
+                 [class]="'bg-' + player.color + '-player text-white'">
+              {{ player.color | uppercase }}
+            </div>
+            <p class="text-sm text-text-secondary mt-4">{{ player.isAI ? 'AI is thinking...' : 'Your turn to roll!' }}</p>
+          }
+
+          <!-- 2D Dice -->
+          <div class="dice-2d mt-8 mb-8" [class]="diceAnimationClass()">
+             @for (i of [1,2,3,4,5,6]; track i) {
+                <div class="dot dot-{{i}}"></div>
+             }
+          </div>
+          
+          <button (click)="rollDice()" 
+                  [disabled]="gameState().isRolling || activePlayer()?.isAI"
+                  class="w-full bg-accent-red text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ gameState().isRolling ? 'Rolling...' : 'Roll Dice' }}
+          </button>
+
+          @if (gameState().message) {
+            <p class="text-center text-sm text-warning-yellow mt-4 h-8">{{ gameState().message }}</p>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

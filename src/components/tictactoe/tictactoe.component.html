@@ -1,0 +1,47 @@
+<div class="w-full h-full flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-md flex flex-col items-center gap-8">
+    <!-- Game Status -->
+    <div class="text-center">
+      <h1 class="text-3xl font-bold text-text-primary">Tic-Tac-Toe</h1>
+       <p class="text-lg font-semibold mt-2 h-8"
+         [class]="isGameOver() ? 'text-positive-green' : 'text-text-secondary'">
+         {{ statusMessage() }}
+      </p>
+    </div>
+
+    <!-- Game Board -->
+    <div class="relative w-full max-w-xs sm:max-w-sm aspect-square">
+      <div class="grid grid-cols-3 grid-rows-3 w-full h-full ttt-board">
+        @for (square of board(); track $index) {
+          <button 
+            class="ttt-square"
+            (click)="handleSquareClick($index)"
+            [disabled]="square !== null || isGameOver()">
+            @if (square === 'X') {
+              <svg class="ttt-x" viewBox="0 0 52 52">
+                <path d="M10 10 L42 42 M42 10 L10 42" />
+              </svg>
+            } @else if (square === 'O') {
+              <svg class="ttt-o" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="16"/>
+              </svg>
+            }
+          </button>
+        }
+      </div>
+      <!-- Winning Line -->
+      @if (winnerLineClass()) {
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="ttt-winner-line" [class]="winnerLineClass()"></div>
+        </div>
+      }
+    </div>
+
+    <!-- Controls -->
+    @if (isGameOver()) {
+       <button (click)="startGame()" class="bg-accent-red text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-transform hover:scale-105 animate-fade-in">
+          Play Again
+        </button>
+    }
+  </div>
+</div>

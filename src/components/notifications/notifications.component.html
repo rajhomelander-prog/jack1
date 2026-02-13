@@ -1,0 +1,59 @@
+<div class="bg-[#141414] border border-[#2A2A2A] rounded-lg">
+  <!-- Header -->
+  <div class="p-4 sm:p-6 border-b border-[#2A2A2A]">
+    <h1 class="text-2xl font-bold text-white">Notifications</h1>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="border-b border-[#2A2A2A] flex">
+    @for(filter of filters; track filter) {
+      <button (click)="setActiveFilter(filter)" 
+              class="px-4 py-3 text-sm font-medium transition-colors duration-200 relative"
+              [class]="activeFilter() === filter ? 'text-white' : 'text-[#A0A0A0] hover:text-white'">
+        {{ filter }}
+        @if (activeFilter() === filter) {
+          <div class="absolute bottom-0 left-0 w-full h-0.5 bg-[#E50914]"></div>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Notifications List -->
+  <div>
+    @if (filteredNotifications().length > 0) {
+      @for(notification of filteredNotifications(); track notification.id) {
+        <div (click)="markAsRead(notification.id)" 
+            class="flex items-start space-x-4 p-4 sm:p-6 border-b border-[#2A2A2A] transition-colors duration-200 cursor-pointer"
+            [class]="notification.isRead ? 'hover:bg-[#1F1F1F]' : 'bg-[#1F1F1F]/50 hover:bg-[#1F1F1F]'">
+          
+          <!-- Icon -->
+          <div class="relative flex-shrink-0">
+            @if (!notification.isRead) {
+              <span class="absolute -top-1 -left-1 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-[#E50914]"></span>
+              </span>
+            }
+             <svg class="h-6 w-6 text-[#A0A0A0]" [class.text-[#E50914]]="!notification.isRead" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getIconForType(notification.type)"></path>
+            </svg>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1">
+            <img [src]="notification.actor.avatar" alt="{{notification.actor.name}}" class="h-8 w-8 rounded-full mb-2">
+            <p class="text-sm text-white">
+              <span class="font-semibold">{{ notification.actor.name }}</span>
+              <span class="text-[#A0A0A0]">{{ ' ' + notification.text }}</span>
+            </p>
+            <p class="text-xs text-[#A0A0A0] mt-1">{{ notification.timestamp }}</p>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="p-10 text-center">
+        <p class="text-[#A0A0A0]">You have no notifications in this category.</p>
+      </div>
+    }
+  </div>
+</div>

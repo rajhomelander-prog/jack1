@@ -1,0 +1,79 @@
+<div class="w-full flex flex-col items-center justify-center p-4">
+    @if (gameState().status === 'Lobby') {
+      <div class="text-center bg-card-background border border-border-color rounded-lg p-8 animate-fade-in">
+        <h1 class="text-3xl font-bold text-text-primary">Classic Chess</h1>
+        <p class="text-text-secondary mt-2 mb-6">The ultimate game of strategy. Plan your moves and outwit your opponent.</p>
+        <button (click)="newGame()" class="bg-accent-red text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-transform hover:scale-105">
+          Start New Game
+        </button>
+      </div>
+    } @else {
+      <div class="w-full max-w-4xl flex flex-col md:flex-row gap-6">
+        <!-- Chess Board -->
+        <div class="board-container">
+            <div class="chess-board">
+                @for (rank of board(); track $index; let rankIndex = $index) {
+                    @for (piece of rank; track $index; let fileIndex = $index) {
+                        <div class="square"
+                            (click)="onSquareClick(rankIndex, fileIndex)"
+                            [class.light-square]="(rankIndex + fileIndex) % 2 !== 0"
+                            [class.dark-square]="(rankIndex + fileIndex) % 2 === 0"
+                            [class.selected]="isSquareSelected(rankIndex, fileIndex)">
+                            
+                            @if (getPieceImage(piece); as pieceImage) {
+                                <img [src]="pieceImage" class="piece" [alt]="piece!.type">
+                            }
+
+                            @if (isLegalMove(rankIndex, fileIndex)) {
+                                <div class="legal-move-indicator"></div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+             <!-- Coordinates -->
+            <div class="files">@for (file of files; track file) { <span>{{file}}</span> }</div>
+            <div class="ranks">@for (rank of ranks; track rank) { <span>{{rank}}</span> }</div>
+        </div>
+
+        <!-- Game Info & Controls -->
+        <div class="w-full md:w-64 bg-card-background border border-border-color rounded-lg p-4 flex flex-col">
+            <h2 class="text-xl font-bold text-text-primary mb-4 text-center">Vichara Chess</h2>
+            
+            <div class="text-center bg-elevated-card rounded-lg p-3 mb-4">
+                <p class="text-lg font-semibold" 
+                   [class.text-positive-green]="gameState().isCheck"
+                   [class.text-negative-red]="gameState().isCheckmate">
+                   {{ gameStatusMessage() }}
+                </p>
+            </div>
+
+            <!-- Captured Pieces -->
+            <div class="flex-grow space-y-4">
+              <!-- White's captured pieces (captured by Black) -->
+              <div class="captured-area">
+                <p class="text-xs text-text-secondary mb-2">Captured by Black</p>
+                <div class="captured-pieces">
+                    @for (p of capturedPieces().w; track $index) {
+                        <img [src]="getPieceImage(p)" class="captured-piece" />
+                    }
+                </div>
+              </div>
+              <!-- Black's captured pieces (captured by White) -->
+              <div class="captured-area">
+                <p class="text-xs text-text-secondary mb-2">Captured by White</p>
+                 <div class="captured-pieces">
+                    @for (p of capturedPieces().b; track $index) {
+                        <img [src]="getPieceImage(p)" class="captured-piece" />
+                    }
+                </div>
+              </div>
+            </div>
+
+            <button (click)="newGame()" class="w-full mt-4 bg-accent-red text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-all">
+                New Game
+            </button>
+        </div>
+      </div>
+    }
+</div>

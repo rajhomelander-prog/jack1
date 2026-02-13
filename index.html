@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>vichara.life</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 
+      Vichara.life New Color Palette - Defined via CSS Variables for Theming
+    */
+    :root, .theme-dark {
+      --color-background-primary: #0B0F14;
+      --color-card-background: #11161D;
+      --color-elevated-card: #151B23;
+      --color-border-color: rgba(255,255,255,0.06);
+      --color-text-primary: #E6EDF3;
+      --color-text-secondary: #9BA3AF;
+      --color-accent-red: #E50914;
+      --color-positive-green: #00C853;
+      --color-negative-red: #FF3B30;
+      --color-warning-yellow: #FFC107;
+    }
+
+    .theme-midnight {
+      --color-background-primary: #000000;
+      --color-card-background: #0D0D0D;
+      --color-elevated-card: #1A1A1A;
+      --color-border-color: rgba(255,255,255,0.08);
+      --color-text-primary: #FAFAFA;
+      --color-text-secondary: #A1A1AA;
+    }
+
+    .theme-light {
+      --color-background-primary: #F3F4F6; /* Tailwind gray-100 */
+      --color-card-background: #FFFFFF;
+      --color-elevated-card: #FFFFFF;
+      --color-border-color: #E5E7EB; /* Tailwind gray-200 */
+      --color-text-primary: #111827; /* Tailwind gray-900 */
+      --color-text-secondary: #6B7280; /* Tailwind gray-500 */
+    }
+    
+    .theme-solarized {
+      --color-background-primary: #002b36;
+      --color-card-background: #073642;
+      --color-elevated-card: #08404f;
+      --color-border-color: rgba(147, 161, 161, 0.2);
+      --color-text-primary: #93a1a1;
+      --color-text-secondary: #839496;
+      --color-accent-red: #dc322f;
+      --color-positive-green: #859900;
+      --color-negative-red: #cb4b16;
+      --color-warning-yellow: #b58900;
+    }
+
+    .theme-dracula {
+      --color-background-primary: #282a36;
+      --color-card-background: #2f3241;
+      --color-elevated-card: #44475a;
+      --color-border-color: rgba(248, 248, 242, 0.1);
+      --color-text-primary: #f8f8f2;
+      --color-text-secondary: #bd93f9;
+      --color-accent-red: #ff5555;
+      --color-positive-green: #50fa7b;
+      --color-negative-red: #ff79c6;
+      --color-warning-yellow: #f1fa8c;
+    }
+
+    .theme-nord {
+      --color-background-primary: #2E3440;
+      --color-card-background: #3B4252;
+      --color-elevated-card: #434C5E;
+      --color-border-color: rgba(216, 222, 233, 0.1);
+      --color-text-primary: #ECEFF4;
+      --color-text-secondary: #D8DEE9;
+      --color-accent-red: #BF616A;
+      --color-positive-green: #A3BE8C;
+      --color-negative-red: #BF616A;
+      --color-warning-yellow: #EBCB8B;
+    }
+    
+    .theme-rose-pine {
+      --color-background-primary: #191724;
+      --color-card-background: #1f1d2e;
+      --color-elevated-card: #26233a;
+      --color-border-color: rgba(224, 222, 244, 0.1);
+      --color-text-primary: #e0def4;
+      --color-text-secondary: #908caa;
+      --color-accent-red: #eb6f92;
+      --color-positive-green: #31748f;
+      --color-negative-red: #ebbcba;
+      --color-warning-yellow: #f6c177;
+    }
+
+    .theme-gruvbox {
+      --color-background-primary: #282828;
+      --color-card-background: #3c3836;
+      --color-elevated-card: #504945;
+      --color-border-color: rgba(235, 219, 178, 0.1);
+      --color-text-primary: #ebdbb2;
+      --color-text-secondary: #a89984;
+      --color-accent-red: #fb4934;
+      --color-positive-green: #b8bb26;
+      --color-negative-red: #cc241d;
+      --color-warning-yellow: #fabd2f;
+    }
+
+    .theme-monokai {
+      --color-background-primary: #272822;
+      --color-card-background: #3E3D32;
+      --color-elevated-card: #49483E;
+      --color-border-color: rgba(248, 248, 242, 0.1);
+      --color-text-primary: #F8F8F2;
+      --color-text-secondary: #75715E;
+      --color-accent-red: #F92672;
+      --color-positive-green: #A6E22E;
+      --color-negative-red: #FD971F;
+      --color-warning-yellow: #E6DB74;
+    }
+
+    .theme-synthwave {
+      --color-background-primary: #2d2a54;
+      --color-card-background: #252344;
+      --color-elevated-card: #312f64;
+      --color-border-color: rgba(255, 255, 255, 0.1);
+      --color-text-primary: #ffffff;
+      --color-text-secondary: #a7a3d7;
+      --color-accent-red: #ff4883;
+      --color-positive-green: #4df2fd;
+      --color-negative-red: #ff9f43;
+      --color-warning-yellow: #fede5d;
+    }
+
+
+    html, body {
+      background-color: var(--color-background-primary);
+      color: var(--color-text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
+    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
+    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
+    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.1.4?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.1.4?external=rxjs",
+    "@angular/router": "https://esm.sh/@angular/router@^21.1.4?external=rxjs",
+    "@angular/core/rxjs-interop": "https://esm.sh/@angular/core@^21.1.4/rxjs-interop?external=rxjs",
+    "@angular/core": "https://esm.sh/@angular/core@^21.1.4?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.1.4?external=rxjs",
+    "@angular/forms": "https://esm.sh/@angular/forms@^21.1.4?external=rxjs",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0?external=rxjs",
+    "chess.js": "https://esm.sh/chess.js@1.0.0-beta.8"
+  }
+}
+</script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'background-primary': 'var(--color-background-primary)',
+            'card-background': 'var(--color-card-background)',
+            'elevated-card': 'var(--color-elevated-card)',
+            'border-color': 'var(--color-border-color)',
+            'accent-red': 'var(--color-accent-red)',
+            'text-primary': 'var(--color-text-primary)',
+            'text-secondary': 'var(--color-text-secondary)',
+            'positive-green': 'var(--color-positive-green)',
+            'negative-red': 'var(--color-negative-red)',
+            'warning-yellow': 'var(--color-warning-yellow)',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0 },
+              '100%': { opacity: 1 },
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background-primary text-text-primary">
+  <app-root></app-root>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<div class="h-[calc(100vh-4rem)] lg:h-[calc(100vh-6rem)] flex bg-[#141414] border border-[#2A2A2A] rounded-lg overflow-hidden">
+  <!-- Conversations List -->
+  <div class="w-1/3 border-r border-[#2A2A2A] flex flex-col">
+    <div class="p-4 border-b border-[#2A2A2A] flex-shrink-0">
+      <h2 class="text-xl font-bold text-white mb-4">Chat</h2>
+      <input type="text" placeholder="Search..." class="w-full bg-[#0B0B0F] border border-[#2A2A2A] rounded-md px-3 py-2 text-sm text-white placeholder-[#A0A0A0] focus:outline-none focus:ring-2 focus:ring-[#E50914]">
+    </div>
+    <div class="flex-grow overflow-y-auto custom-scrollbar">
+      @for(conv of conversations(); track conv.id) {
+        <div (click)="selectConversation(conv)" 
+             class="p-4 flex items-start space-x-3 cursor-pointer border-b border-[#2A2A2A] transition-colors duration-200"
+             [class]="selectedConversation()?.id === conv.id ? 'bg-[#1F1F1F]' : 'hover:bg-[#1F1F1F]'">
+          <img [src]="conv.avatar" alt="{{conv.name}}" class="w-10 h-10 rounded-full flex-shrink-0">
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-white truncate">{{conv.name}}</p>
+              <p class="text-xs text-[#A0A0A0] flex-shrink-0">{{conv.lastMessageTime}}</p>
+            </div>
+            <div class="flex justify-between items-start mt-1">
+              <p class="text-xs text-[#A0A0A0] truncate pr-2">{{conv.lastMessage}}</p>
+              @if (conv.unreadCount > 0) {
+                <span class="bg-[#E50914] text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0">{{conv.unreadCount}}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Thread View -->
+  <div class="w-2/3 flex flex-col">
+    @if (selectedConversation(); as conv) {
+      <div class="p-4 border-b border-[#2A2A2A] flex-shrink-0 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <img [src]="conv.avatar" alt="{{conv.name}}" class="w-10 h-10 rounded-full">
+          <div>
+            <p class="font-semibold text-white">{{conv.name}}</p>
+            <p class="text-xs text-[#10B981]">Online</p>
+          </div>
+        </div>
+      </div>
+
+      <div #messageContainer class="flex-grow p-6 overflow-y-auto custom-scrollbar">
+        <div class="space-y-6">
+          @for(message of conv.messages; track message.id) {
+            <div class="flex items-end gap-2" [class.flex-row-reverse]="message.senderId === 'me'">
+              @if (message.senderId !== 'me') {
+                <img [src]="getParticipant(conv, message.senderId)?.avatar" alt="sender avatar" class="w-8 h-8 rounded-full flex-shrink-0">
+              }
+              <div class="max-w-md group relative">
+                <div class="px-4 py-2 rounded-2xl" [class]="message.senderId === 'me' ? 'bg-[#E50914] text-white rounded-br-none' : 'bg-[#1F1F1F] text-white rounded-bl-none'">
+                  <p class="text-sm">{{message.text}}</p>
+                  @if (message.attachment) {
+                    <img [src]="message.attachment.url" class="mt-2 rounded-lg border border-[#2A2A2A]">
+                  }
+                </div>
+                <p class="text-xs text-gray-500 mt-1 px-2" [class.text-right]="message.senderId === 'me'">{{message.timestamp}}</p>
+                
+                @if (objectKeys(message.reactions).length > 0) {
+                  <div class="absolute -bottom-3 flex space-x-1" [class]="message.senderId === 'me' ? 'right-2' : 'left-2'">
+                    @for (emoji of objectKeys(message.reactions); track emoji) {
+                      <div class="bg-[#1F1F1F] text-xs rounded-full px-1.5 py-0.5 border border-[#2A2A2A] flex items-center space-x-1">
+                        <span>{{ emoji }}</span>
+                        <span class="text-white font-semibold">{{ message.reactions[emoji].length }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+                
+                <div class="absolute top-0 opacity-0 group-hover:opacity-100 transition-opacity flex bg-[#1F1F1F] border border-[#2A2A2A] rounded-full shadow-lg" [class]="message.senderId === 'me' ? 'left-0 -translate-x-full -ml-2' : 'right-0 translate-x-full mr-2'">
+                  @for(emoji of reactionEmojis; track emoji) {
+                    <button (click)="toggleReaction(message, emoji)" class="p-1.5 hover:scale-125 transition-transform">{{emoji}}</button>
+                  }
+                </div>
+              </div>
+
+              @if (message.senderId === 'me') {
+                 <div class="w-8 flex-shrink-0 flex items-center justify-center">
+                    <svg class="h-4 w-4" [class]="message.status === 'read' ? 'text-blue-400' : 'text-gray-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getMessageStatusIcon(message.status)"></path></svg>
+                 </div>
+              }
+            </div>
+          }
+
+          @if (isOpponentTyping()) {
+            <div class="flex items-end gap-2">
+              <img [src]="conv.avatar" alt="sender avatar" class="w-8 h-8 rounded-full">
+              <div class="px-4 py-2 rounded-2xl bg-[#1F1F1F] rounded-bl-none">
+                <div class="flex items-center space-x-1">
+                  <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></span>
+                  <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></span>
+                  <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-[#2A2A2A] flex-shrink-0">
+        <form (ngSubmit)="sendMessage()" class="flex items-center space-x-3">
+          <input [formControl]="chatInput" type="text" placeholder="Type a message..." class="w-full bg-[#0B0B0F] border border-[#2A2A2A] rounded-full px-4 py-2 text-sm text-white placeholder-[#A0A0A0] focus:outline-none focus:ring-2 focus:ring-[#E50914]">
+          <button type="submit" [disabled]="chatInput.invalid" class="bg-[#E50914] text-white rounded-full p-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+          </button>
+        </form>
+      </div>
+    } @else {
+      <div class="flex-grow flex items-center justify-center">
+        <p class="text-[#A0A0A0]">Select a conversation to start chatting.</p>
+      </div>
+    }
+  </div>
+</div>
